@@ -10,7 +10,12 @@ static int argc = 3;
 amf::Launcher::Launcher()
     : QCoreApplication(argc, args.data()),
       _games{QSharedPointer<Game>::create("1", "Super Game", "notepad.exe"),
-             QSharedPointer<Game>::create("2", "Bad Game", "notepad.exe")} {}
+             QSharedPointer<Game>::create("2", "Bad Game", "notepad.exe")} {
+  for (auto&& pGame : _games) {
+    connect(pGame.data(), &Game::inGameChanged, this,
+            &Launcher::inGameTimeChanged);
+  }
+}
 
 int amf::Launcher::exec() {
   return QCoreApplication::exec();

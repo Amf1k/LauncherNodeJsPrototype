@@ -13,21 +13,19 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${CMAKE_JS_INC})
-
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "*.hpp")
 file(GLOB SOURCES_LIST CONFIGURE_DEPENDS "*.cpp")
 
-add_library(${PROJECT_NAME} SHARED ${HEADER_LIST} ${SOURCES_LIST} ${CMAKE_JS_SRC})
+message(${SOURCES_LIST})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    PREFIX ""
-    SUFFIX ".node") # will output an intro.node file
+add_library(${PROJECT_NAME} SHARED ${CMAKE_JS_SRC} ${SOURCES_LIST} ${HEADER_LIST})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core ${CMAKE_JS_LIB})
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_JS_LIB} Qt${QT_VERSION_MAJOR}::Core)
 
 execute_process(COMMAND node -p "require('node-addon-api').include"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -35,7 +33,6 @@ execute_process(COMMAND node -p "require('node-addon-api').include"
         )
 string(REPLACE "\n" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
 string(REPLACE "\"" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE ${NODE_ADDON_API_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_JS_INC} ${NODE_ADDON_API_DIR})
 
 add_definitions(-DNAPI_VERSION=3)
-

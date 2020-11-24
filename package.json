@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "cmake-js compile --CDCMAKE_PREFIX_PATH=C:\\Qt\\5.12.0\\msvc2017_64",
+    "install": "cmake-js compile --CDCMAKE_PREFIX_PATH=C:\\Qt\\5.15.2\\msvc2019_64",
     "print": "cmake-js print-configure --debug",
     "start": "node index.js"
   },

@@ -29,11 +29,13 @@ const QString& amf::Game::name() const {
 }
 
 void amf::Game::start() const {
-  _pProcess->start(_processPath);
+  _pProcess->start(_processPath, QStringList{});
+  _pInGameTimeTimer->start(TIMER_TICK);
 }
 
 void amf::Game::stop() const {
   _pProcess->kill();
+  _pInGameTimeTimer->stop();
 }
 
 std::chrono::seconds amf::Game::inGameTime() const {
