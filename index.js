@@ -1,16 +1,52 @@
-var {Launcher, hello} = require('bindings')('LauncherNodeJsPrototype');
-const EventEmitter = require('events').EventEmitter
-const inherits = require('util').inherits
-const emitter = new EventEmitter()
-const l = new Launcher();
+const { app, BrowserWindow, ipcMain } = require('electron')
 
-emitter.on('inGameTimeChanged', (time) => {
-    console.log(time)
+let win = null;
+ipcMain.on("inGameTimeChanged", (event, args) => {
+    console.log(args)
+    event.reply('inGameTimeChangedFromMain', 'args')
+    win.webContents.send('inGameTimeChangedFromMain', args);
 });
-l.callAndEmit(emitter.emit.bind(emitter));
-console.log(l.games())
-l.startGame();
-console.log(hello()); // 'world'
 
-l.exec();
+function createWindow () {
+    win = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: true
+      }
+    })
+  
+    win.loadFile('index.html')
+    win.webContents.openDevTools()
+
+    const renderrer = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+          nodeIntegration: true
+        }
+      })
+    
+      renderrer.loadFile('renderrer.html')
+      renderrer.webContents.openDevTools()
+    
+    // startLauncher();
+  }
+
+
+app.whenReady().then(createWindow)
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow() 
+  }
+})
+
+
 

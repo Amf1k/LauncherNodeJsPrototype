@@ -1,0 +1,32 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        async function start() {
+        console.log("test")
+        var { Launcher, hello } = require('bindings')('LauncherNodeJsPrototype');
+        const EventEmitter = require('events').EventEmitter
+        const { ipcRenderer } = require('electron')
+        const emitter = new EventEmitter()
+        const l = new Launcher();
+        emitter.on('inGameTimeChanged', (time) => {
+            console.log(time);
+            ipcRenderer.send("inGameTimeChanged", time);
+        });
+        l.callAndEmit(emitter.emit.bind(emitter));
+        console.log(l.games())
+        l.startGame();
+        console.log(hello()); // 'world'
+        l.exec();
+    }
+    start();
+    </script>
+</body>
+
+</html>
